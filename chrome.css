@@ -1,24 +1,28 @@
 /*
- * RandomZenTweaks – modular tweaks for Zen Browser / modułowe poprawki dla Zen
+ * RandomZenTweaks - modular tweaks for Zen Browser
  *
  * Every module is wrapped in @media (-moz-pref("<module>.enabled")).
  * When the module is off, NOTHING in this file is applied.
  * Dropdown defaults are the "base" rules; other choices only override them
  * (Sine does not write default prefs until the user changes them).
+ *
+ * Every user-visible text (preferences.json) is English.
  */
 
 
 /* ==========================================================================
-   MODULE: Essentials audio (mute button + sound visualizer)
+   MODULE: Essentials mute button and visualiser
    ========================================================================== */
 @media (-moz-pref("mod.randomzentweaks.essentials-audio.enabled")) {
 
-  /* ---- defaults: mute top-right, mono color, small visualizer ---- */
+  /* ---- defaults: mute top-right, native style, mono, small, above favicon ---- */
   #zen-essentials tab[zen-essential="true"] {
-    --rzt-mute-top: 3px;
-    --rzt-mute-right: 3px;
+    --rzt-mute-inset: 6px;
+    --rzt-mute-top: var(--rzt-mute-inset);
+    --rzt-mute-right: var(--rzt-mute-inset);
     --rzt-mute-bottom: auto;
     --rzt-mute-left: auto;
+    --rzt-mute-translate: none;
 
     --rzt-eq-color: #d0d0d0;
     --rzt-eq-w: 20px;
@@ -26,20 +30,20 @@
     --rzt-bar-w: 2px;
   }
 
-  /* ---- mute icon: position (override defaults) ---- */
+  /* ---- mute icon: position ---- */
   @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-position", "top-left")) {
     #zen-essentials tab[zen-essential="true"] {
-      --rzt-mute-top: 3px;
+      --rzt-mute-top: var(--rzt-mute-inset);
       --rzt-mute-right: auto;
       --rzt-mute-bottom: auto;
-      --rzt-mute-left: 3px;
+      --rzt-mute-left: var(--rzt-mute-inset);
     }
   }
   @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-position", "bottom-right")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-mute-top: auto;
-      --rzt-mute-right: 3px;
-      --rzt-mute-bottom: 3px;
+      --rzt-mute-right: var(--rzt-mute-inset);
+      --rzt-mute-bottom: var(--rzt-mute-inset);
       --rzt-mute-left: auto;
     }
   }
@@ -47,8 +51,21 @@
     #zen-essentials tab[zen-essential="true"] {
       --rzt-mute-top: auto;
       --rzt-mute-right: auto;
-      --rzt-mute-bottom: 3px;
-      --rzt-mute-left: 3px;
+      --rzt-mute-bottom: var(--rzt-mute-inset);
+      --rzt-mute-left: var(--rzt-mute-inset);
+    }
+  }
+  /* middle: centred horizontally, sitting just above the favicon and
+     overlapping it slightly. Tune --rzt-mute-middle-lift if your favicons
+     are bigger (e.g. with Big Essentials). */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-position", "middle")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-mute-middle-lift: 18px;
+      --rzt-mute-top: calc(50% - var(--rzt-mute-middle-lift));
+      --rzt-mute-right: auto;
+      --rzt-mute-bottom: auto;
+      --rzt-mute-left: 50%;
+      --rzt-mute-translate: -50% -50%;
     }
   }
 
@@ -65,12 +82,11 @@
     left: var(--rzt-mute-left) !important;
     margin: 0 !important;
     transform: none !important;
+    translate: var(--rzt-mute-translate) !important;
 
     width: 18px !important;
     height: 18px !important;
     z-index: 20 !important;
-    border-radius: 50% !important;
-    background-color: color-mix(in srgb, var(--toolbar-bgcolor, #1c1b22) 75%, transparent) !important;
 
     opacity: 0 !important;
     visibility: hidden !important;
@@ -85,29 +101,46 @@
     pointer-events: auto !important;
   }
 
-  /* ---- mute icon: style "dark" = inverted colors (default "light" = untouched) ---- */
+  /* ---- mute icon: style (native = Firefox/Zen styling of regular tabs, untouched) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-style", "light")) {
+    #zen-essentials tab[zen-essential="true"] .tab-icon-overlay {
+      border-radius: 50% !important;
+      outline: none !important;
+      background-image: none !important;
+      background-color: rgba(245, 245, 250, 0.92) !important;
+      color: #1c1b22 !important;
+      -moz-context-properties: fill !important;
+      fill: currentColor !important;
+    }
+  }
   @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-style", "dark")) {
     #zen-essentials tab[zen-essential="true"] .tab-icon-overlay {
-      filter: invert(1) !important;
+      border-radius: 50% !important;
+      outline: none !important;
+      background-image: none !important;
+      background-color: rgba(28, 27, 34, 0.92) !important;
+      color: #f0f0f4 !important;
+      -moz-context-properties: fill !important;
+      fill: currentColor !important;
     }
   }
 
-  /* ---- visualizer: color ---- */
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualizer-color", "accent")) {
+  /* ---- visualiser: color ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "accent")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-eq-color: var(--zen-primary-color, var(--toolbar-color, #d0d0d0));
     }
   }
 
-  /* ---- visualizer: width (small = default) ---- */
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualizer-width", "medium")) {
+  /* ---- visualiser: width (small = default) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-width", "medium")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-eq-w: 34px;
       --rzt-eq-h: 12px;
       --rzt-bar-w: 3px;
     }
   }
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualizer-width", "large")) {
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-width", "large")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-eq-w: calc(100% - 16px);
       --rzt-eq-h: 45%;
@@ -115,7 +148,7 @@
     }
   }
 
-  /* ---- visualizer: 5 bars (small, medium) ---- */
+  /* ---- visualiser: 5 bars (small, medium) ---- */
   #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
     content: "";
     position: absolute;
@@ -147,11 +180,11 @@
       linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color)),
       linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color));
 
-    animation: rzt-equalizer-5 600ms ease-in-out infinite alternate;
+    animation: rzt-equalizer-5 3s ease-in-out infinite;
   }
 
-  /* ---- visualizer: 9 bars (large, whole tile) ---- */
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualizer-width", "large")) {
+  /* ---- visualiser: 9 bars (large, whole tile) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-width", "large")) {
     #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
       bottom: 6px;
       background-position:
@@ -185,6 +218,28 @@
         linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color)),
         linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color));
       animation-name: rzt-equalizer-9;
+      animation-duration: 3.6s;
+    }
+  }
+
+  /* ---- visualiser: layer (above = default) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-layer", "behind")) {
+    #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
+      z-index: -1;
+    }
+  }
+
+  /* ---- visualiser: none -> no bars, mute icon always visible while audio is active ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-mode", "none")) {
+    #zen-essentials tab[zen-essential="true"] .tab-content::after {
+      content: none !important;
+      display: none !important;
+    }
+    #zen-essentials tab[zen-essential="true"][soundplaying] .tab-icon-overlay,
+    #zen-essentials tab[zen-essential="true"][muted] .tab-icon-overlay {
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
     }
   }
 
@@ -195,54 +250,354 @@
   }
 }
 
+/* Longer, pseudo-random patterns (generated once, loops seamlessly) */
 @keyframes rzt-equalizer-5 {
-  from {
+  0% {
     background-size:
-      var(--rzt-bar-w) 37%,
-      var(--rzt-bar-w) 62%,
-      var(--rzt-bar-w) 100%,
-      var(--rzt-bar-w) 25%,
-      var(--rzt-bar-w) 62%;
+      var(--rzt-bar-w) 55%,
+      var(--rzt-bar-w) 33%,
+      var(--rzt-bar-w) 64%,
+      var(--rzt-bar-w) 97%,
+      var(--rzt-bar-w) 20%;
   }
-  to {
+  6.25% {
+    background-size:
+      var(--rzt-bar-w) 23%,
+      var(--rzt-bar-w) 82%,
+      var(--rzt-bar-w) 26%,
+      var(--rzt-bar-w) 60%,
+      var(--rzt-bar-w) 88%;
+  }
+  12.5% {
+    background-size:
+      var(--rzt-bar-w) 21%,
+      var(--rzt-bar-w) 78%,
+      var(--rzt-bar-w) 41%,
+      var(--rzt-bar-w) 18%,
+      var(--rzt-bar-w) 25%;
+  }
+  18.75% {
+    background-size:
+      var(--rzt-bar-w) 69%,
+      var(--rzt-bar-w) 67%,
+      var(--rzt-bar-w) 22%,
+      var(--rzt-bar-w) 44%,
+      var(--rzt-bar-w) 25%;
+  }
+  25% {
+    background-size:
+      var(--rzt-bar-w) 84%,
+      var(--rzt-bar-w) 68%,
+      var(--rzt-bar-w) 21%,
+      var(--rzt-bar-w) 86%,
+      var(--rzt-bar-w) 29%;
+  }
+  31.25% {
+    background-size:
+      var(--rzt-bar-w) 42%,
+      var(--rzt-bar-w) 94%,
+      var(--rzt-bar-w) 94%,
+      var(--rzt-bar-w) 88%,
+      var(--rzt-bar-w) 21%;
+  }
+  37.5% {
     background-size:
       var(--rzt-bar-w) 87%,
+      var(--rzt-bar-w) 88%,
+      var(--rzt-bar-w) 64%,
+      var(--rzt-bar-w) 20%,
+      var(--rzt-bar-w) 42%;
+  }
+  43.75% {
+    background-size:
+      var(--rzt-bar-w) 19%,
+      var(--rzt-bar-w) 85%,
+      var(--rzt-bar-w) 31%,
+      var(--rzt-bar-w) 51%,
+      var(--rzt-bar-w) 67%;
+  }
+  50% {
+    background-size:
+      var(--rzt-bar-w) 32%,
+      var(--rzt-bar-w) 83%,
+      var(--rzt-bar-w) 29%,
+      var(--rzt-bar-w) 87%,
+      var(--rzt-bar-w) 53%;
+  }
+  56.25% {
+    background-size:
+      var(--rzt-bar-w) 85%,
       var(--rzt-bar-w) 37%,
-      var(--rzt-bar-w) 50%,
-      var(--rzt-bar-w) 75%,
-      var(--rzt-bar-w) 100%;
+      var(--rzt-bar-w) 27%,
+      var(--rzt-bar-w) 88%,
+      var(--rzt-bar-w) 87%;
+  }
+  62.5% {
+    background-size:
+      var(--rzt-bar-w) 95%,
+      var(--rzt-bar-w) 38%,
+      var(--rzt-bar-w) 61%,
+      var(--rzt-bar-w) 26%,
+      var(--rzt-bar-w) 84%;
+  }
+  68.75% {
+    background-size:
+      var(--rzt-bar-w) 22%,
+      var(--rzt-bar-w) 86%,
+      var(--rzt-bar-w) 21%,
+      var(--rzt-bar-w) 93%,
+      var(--rzt-bar-w) 40%;
+  }
+  75% {
+    background-size:
+      var(--rzt-bar-w) 77%,
+      var(--rzt-bar-w) 82%,
+      var(--rzt-bar-w) 68%,
+      var(--rzt-bar-w) 54%,
+      var(--rzt-bar-w) 73%;
+  }
+  81.25% {
+    background-size:
+      var(--rzt-bar-w) 88%,
+      var(--rzt-bar-w) 72%,
+      var(--rzt-bar-w) 60%,
+      var(--rzt-bar-w) 52%,
+      var(--rzt-bar-w) 45%;
+  }
+  87.5% {
+    background-size:
+      var(--rzt-bar-w) 37%,
+      var(--rzt-bar-w) 45%,
+      var(--rzt-bar-w) 24%,
+      var(--rzt-bar-w) 87%,
+      var(--rzt-bar-w) 52%;
+  }
+  93.75% {
+    background-size:
+      var(--rzt-bar-w) 81%,
+      var(--rzt-bar-w) 77%,
+      var(--rzt-bar-w) 57%,
+      var(--rzt-bar-w) 71%,
+      var(--rzt-bar-w) 50%;
+  }
+  100% {
+    background-size:
+      var(--rzt-bar-w) 55%,
+      var(--rzt-bar-w) 33%,
+      var(--rzt-bar-w) 64%,
+      var(--rzt-bar-w) 97%,
+      var(--rzt-bar-w) 20%;
   }
 }
 
 @keyframes rzt-equalizer-9 {
-  from {
+  0% {
     background-size:
-      var(--rzt-bar-w) 40%,
-      var(--rzt-bar-w) 70%,
-      var(--rzt-bar-w) 100%,
-      var(--rzt-bar-w) 55%,
-      var(--rzt-bar-w) 80%,
       var(--rzt-bar-w) 35%,
-      var(--rzt-bar-w) 90%,
+      var(--rzt-bar-w) 67%,
+      var(--rzt-bar-w) 67%,
+      var(--rzt-bar-w) 95%,
+      var(--rzt-bar-w) 50%,
+      var(--rzt-bar-w) 75%,
+      var(--rzt-bar-w) 41%,
+      var(--rzt-bar-w) 74%,
+      var(--rzt-bar-w) 79%;
+  }
+  6.25% {
+    background-size:
+      var(--rzt-bar-w) 37%,
+      var(--rzt-bar-w) 78%,
+      var(--rzt-bar-w) 81%,
+      var(--rzt-bar-w) 44%,
+      var(--rzt-bar-w) 14%,
+      var(--rzt-bar-w) 15%,
+      var(--rzt-bar-w) 61%,
+      var(--rzt-bar-w) 88%,
+      var(--rzt-bar-w) 68%;
+  }
+  12.5% {
+    background-size:
+      var(--rzt-bar-w) 22%,
+      var(--rzt-bar-w) 32%,
+      var(--rzt-bar-w) 43%,
+      var(--rzt-bar-w) 43%,
+      var(--rzt-bar-w) 19%,
+      var(--rzt-bar-w) 69%,
+      var(--rzt-bar-w) 66%,
+      var(--rzt-bar-w) 92%,
+      var(--rzt-bar-w) 70%;
+  }
+  18.75% {
+    background-size:
+      var(--rzt-bar-w) 18%,
+      var(--rzt-bar-w) 56%,
+      var(--rzt-bar-w) 83%,
+      var(--rzt-bar-w) 77%,
+      var(--rzt-bar-w) 28%,
+      var(--rzt-bar-w) 97%,
+      var(--rzt-bar-w) 61%,
+      var(--rzt-bar-w) 16%,
+      var(--rzt-bar-w) 33%;
+  }
+  25% {
+    background-size:
+      var(--rzt-bar-w) 25%,
+      var(--rzt-bar-w) 29%,
+      var(--rzt-bar-w) 16%,
+      var(--rzt-bar-w) 72%,
+      var(--rzt-bar-w) 34%,
+      var(--rzt-bar-w) 84%,
+      var(--rzt-bar-w) 57%,
+      var(--rzt-bar-w) 65%,
+      var(--rzt-bar-w) 76%;
+  }
+  31.25% {
+    background-size:
+      var(--rzt-bar-w) 33%,
+      var(--rzt-bar-w) 37%,
+      var(--rzt-bar-w) 99%,
+      var(--rzt-bar-w) 18%,
+      var(--rzt-bar-w) 74%,
+      var(--rzt-bar-w) 44%,
+      var(--rzt-bar-w) 23%,
+      var(--rzt-bar-w) 39%,
+      var(--rzt-bar-w) 40%;
+  }
+  37.5% {
+    background-size:
+      var(--rzt-bar-w) 100%,
+      var(--rzt-bar-w) 98%,
+      var(--rzt-bar-w) 88%,
+      var(--rzt-bar-w) 23%,
+      var(--rzt-bar-w) 29%,
+      var(--rzt-bar-w) 85%,
+      var(--rzt-bar-w) 74%,
+      var(--rzt-bar-w) 85%,
+      var(--rzt-bar-w) 63%;
+  }
+  43.75% {
+    background-size:
+      var(--rzt-bar-w) 39%,
+      var(--rzt-bar-w) 57%,
+      var(--rzt-bar-w) 32%,
+      var(--rzt-bar-w) 82%,
+      var(--rzt-bar-w) 66%,
+      var(--rzt-bar-w) 51%,
       var(--rzt-bar-w) 60%,
+      var(--rzt-bar-w) 71%,
+      var(--rzt-bar-w) 78%;
+  }
+  50% {
+    background-size:
+      var(--rzt-bar-w) 63%,
+      var(--rzt-bar-w) 54%,
+      var(--rzt-bar-w) 76%,
+      var(--rzt-bar-w) 63%,
+      var(--rzt-bar-w) 48%,
+      var(--rzt-bar-w) 17%,
+      var(--rzt-bar-w) 25%,
+      var(--rzt-bar-w) 34%,
+      var(--rzt-bar-w) 77%;
+  }
+  56.25% {
+    background-size:
+      var(--rzt-bar-w) 14%,
+      var(--rzt-bar-w) 76%,
+      var(--rzt-bar-w) 22%,
+      var(--rzt-bar-w) 84%,
+      var(--rzt-bar-w) 90%,
+      var(--rzt-bar-w) 80%,
+      var(--rzt-bar-w) 42%,
+      var(--rzt-bar-w) 87%,
+      var(--rzt-bar-w) 91%;
+  }
+  62.5% {
+    background-size:
+      var(--rzt-bar-w) 54%,
+      var(--rzt-bar-w) 85%,
+      var(--rzt-bar-w) 93%,
+      var(--rzt-bar-w) 28%,
+      var(--rzt-bar-w) 37%,
+      var(--rzt-bar-w) 99%,
+      var(--rzt-bar-w) 35%,
+      var(--rzt-bar-w) 94%,
+      var(--rzt-bar-w) 58%;
+  }
+  68.75% {
+    background-size:
+      var(--rzt-bar-w) 56%,
+      var(--rzt-bar-w) 58%,
+      var(--rzt-bar-w) 90%,
+      var(--rzt-bar-w) 53%,
+      var(--rzt-bar-w) 45%,
+      var(--rzt-bar-w) 27%,
+      var(--rzt-bar-w) 35%,
+      var(--rzt-bar-w) 22%,
+      var(--rzt-bar-w) 36%;
+  }
+  75% {
+    background-size:
+      var(--rzt-bar-w) 68%,
+      var(--rzt-bar-w) 61%,
+      var(--rzt-bar-w) 34%,
+      var(--rzt-bar-w) 18%,
+      var(--rzt-bar-w) 100%,
+      var(--rzt-bar-w) 80%,
+      var(--rzt-bar-w) 98%,
+      var(--rzt-bar-w) 44%,
+      var(--rzt-bar-w) 66%;
+  }
+  81.25% {
+    background-size:
+      var(--rzt-bar-w) 34%,
+      var(--rzt-bar-w) 89%,
+      var(--rzt-bar-w) 15%,
+      var(--rzt-bar-w) 58%,
+      var(--rzt-bar-w) 76%,
+      var(--rzt-bar-w) 78%,
+      var(--rzt-bar-w) 62%,
+      var(--rzt-bar-w) 99%,
       var(--rzt-bar-w) 45%;
   }
-  to {
+  87.5% {
     background-size:
-      var(--rzt-bar-w) 85%,
       var(--rzt-bar-w) 45%,
-      var(--rzt-bar-w) 60%,
-      var(--rzt-bar-w) 95%,
-      var(--rzt-bar-w) 40%,
+      var(--rzt-bar-w) 34%,
+      var(--rzt-bar-w) 85%,
+      var(--rzt-bar-w) 22%,
+      var(--rzt-bar-w) 70%,
+      var(--rzt-bar-w) 66%,
       var(--rzt-bar-w) 75%,
+      var(--rzt-bar-w) 21%,
+      var(--rzt-bar-w) 50%;
+  }
+  93.75% {
+    background-size:
+      var(--rzt-bar-w) 20%,
+      var(--rzt-bar-w) 47%,
+      var(--rzt-bar-w) 98%,
+      var(--rzt-bar-w) 51%,
+      var(--rzt-bar-w) 18%,
+      var(--rzt-bar-w) 67%,
+      var(--rzt-bar-w) 45%,
+      var(--rzt-bar-w) 35%,
+      var(--rzt-bar-w) 64%;
+  }
+  100% {
+    background-size:
+      var(--rzt-bar-w) 35%,
+      var(--rzt-bar-w) 67%,
+      var(--rzt-bar-w) 67%,
+      var(--rzt-bar-w) 95%,
       var(--rzt-bar-w) 50%,
-      var(--rzt-bar-w) 100%,
-      var(--rzt-bar-w) 65%;
+      var(--rzt-bar-w) 75%,
+      var(--rzt-bar-w) 41%,
+      var(--rzt-bar-w) 74%,
+      var(--rzt-bar-w) 79%;
   }
 }
 
 
 /* ==========================================================================
-   NEW MODULES GO HERE / NOWE MODUŁY DODAWAJ TUTAJ
-   Every user-visible text (preferences.json labels) must be PL + EN.
+   NEW MODULES GO HERE
    ========================================================================== */

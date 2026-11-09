@@ -1,14 +1,19 @@
 {
   "id": "4f1d2c8e-7a35-4b9e-9c61-3e8d5a0b72f4",
   "name": "RandomZenTweaks",
-  "description": "Modular collection of small Zen Browser tweaks. / Modułowy zestaw drobnych poprawek do przeglądarki Zen.",
+  "description": "Modular collection of small Zen Browser tweaks.",
   "homepage": "https://github.com/MrZolf/RandomZenTweaks",
   "style": "https://raw.githubusercontent.com/MrZolf/RandomZenTweaks/main/chrome.css",
   "readme": "https://raw.githubusercontent.com/MrZolf/RandomZenTweaks/main/README.md",
   "preferences": "https://raw.githubusercontent.com/MrZolf/RandomZenTweaks/main/preferences.json",
   "author": "MrZolf",
-  "version": "1.1.0",
-  "tags": ["essentials", "tabs", "audio", "tweaks"],
+  "version": "1.2.0",
+  "tags": [
+    "essentials",
+    "tabs",
+    "audio",
+    "tweaks"
+  ],
   "createdAt": "2026-11-09",
   "updatedAt": "2026-11-09"
 }

@@ -1,63 +1,178 @@
 [
   {
     "property": "mod.randomzentweaks.essentials-audio.enabled",
-    "label": "Moduł Essentials: przycisk wyciszania i wizualizator / Essentials module: mute button and visualizer",
+    "label": "Essentials mute button and visualiser",
     "type": "checkbox",
     "defaultValue": false
   },
   {
     "property": "mod.randomzentweaks.essentials-audio.mute-position",
-    "label": "Pozycja ikony wyciszenia / Mute icon position",
+    "label": "Mute icon position",
     "type": "dropdown",
+    "placeholder": "Top right",
     "defaultValue": "top-right",
     "options": [
-      { "label": "Prawy górny róg / Top right", "value": "top-right" },
-      { "label": "Lewy górny róg / Top left", "value": "top-left" },
-      { "label": "Prawy dolny róg / Bottom right", "value": "bottom-right" },
-      { "label": "Lewy dolny róg / Bottom left", "value": "bottom-left" }
+      {
+        "label": "Top right",
+        "value": "top-right"
+      },
+      {
+        "label": "Top left",
+        "value": "top-left"
+      },
+      {
+        "label": "Bottom right",
+        "value": "bottom-right"
+      },
+      {
+        "label": "Bottom left",
+        "value": "bottom-left"
+      },
+      {
+        "label": "Middle (slightly above the favicon)",
+        "value": "middle"
+      }
     ],
     "conditions": [
-      { "if": { "property": "mod.randomzentweaks.essentials-audio.enabled", "value": true } }
+      {
+        "if": {
+          "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
     ]
   },
   {
     "property": "mod.randomzentweaks.essentials-audio.mute-style",
-    "label": "Styl ikony wyciszenia / Mute icon style",
+    "label": "Mute icon style",
     "type": "dropdown",
-    "defaultValue": "light",
+    "placeholder": "Native",
+    "defaultValue": "native",
     "options": [
-      { "label": "Jasna / Light", "value": "light" },
-      { "label": "Ciemna / Dark", "value": "dark" }
+      {
+        "label": "Native (same as regular tabs)",
+        "value": "native"
+      },
+      {
+        "label": "Light",
+        "value": "light"
+      },
+      {
+        "label": "Dark",
+        "value": "dark"
+      }
     ],
     "conditions": [
-      { "if": { "property": "mod.randomzentweaks.essentials-audio.enabled", "value": true } }
+      {
+        "if": {
+          "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
     ]
   },
   {
-    "property": "mod.randomzentweaks.essentials-audio.visualizer-color",
-    "label": "Kolor wizualizatora / Visualizer color",
+    "property": "mod.randomzentweaks.essentials-audio.visualiser-mode",
+    "label": "Sound visualiser",
     "type": "dropdown",
+    "placeholder": "Animated",
+    "defaultValue": "animated",
+    "options": [
+      {
+        "label": "Animated",
+        "value": "animated"
+      },
+      {
+        "label": "None (mute icon is always visible)",
+        "value": "none"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "property": "mod.randomzentweaks.essentials-audio.visualiser-color",
+    "label": "Visualiser color",
+    "type": "dropdown",
+    "placeholder": "Monochrome",
     "defaultValue": "mono",
     "options": [
-      { "label": "Monochromatyczny / Monochrome", "value": "mono" },
-      { "label": "Kolor Zen / Zen accent color", "value": "accent" }
+      {
+        "label": "Monochrome",
+        "value": "mono"
+      },
+      {
+        "label": "Zen accent color",
+        "value": "accent"
+      }
     ],
     "conditions": [
-      { "if": { "property": "mod.randomzentweaks.essentials-audio.enabled", "value": true } }
+      {
+        "if": {
+          "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
     ]
   },
   {
-    "property": "mod.randomzentweaks.essentials-audio.visualizer-width",
-    "label": "Szerokość wizualizatora / Visualizer width",
+    "property": "mod.randomzentweaks.essentials-audio.visualiser-width",
+    "label": "Visualiser width",
     "type": "dropdown",
+    "placeholder": "Small",
     "defaultValue": "small",
     "options": [
-      { "label": "Mała / Small", "value": "small" },
-      { "label": "Średnia / Medium", "value": "medium" },
-      { "label": "Duża (cały kafelek) / Large (full tile)", "value": "large" }
+      {
+        "label": "Small",
+        "value": "small"
+      },
+      {
+        "label": "Medium",
+        "value": "medium"
+      },
+      {
+        "label": "Large (full tile)",
+        "value": "large"
+      }
     ],
     "conditions": [
-      { "if": { "property": "mod.randomzentweaks.essentials-audio.enabled", "value": true } }
+      {
+        "if": {
+          "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "property": "mod.randomzentweaks.essentials-audio.visualiser-layer",
+    "label": "Visualiser layer",
+    "type": "dropdown",
+    "placeholder": "Above favicon",
+    "defaultValue": "above",
+    "options": [
+      {
+        "label": "Above favicon",
+        "value": "above"
+      },
+      {
+        "label": "Behind favicon",
+        "value": "behind"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
     ]
   }
 ]
