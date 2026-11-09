@@ -1,0 +1,14 @@
+{
+  "id": "4f1d2c8e-7a35-4b9e-9c61-3e8d5a0b72f4",
+  "name": "RandomZenTweaks",
+  "description": "Modular collection of small Zen Browser tweaks, each one toggleable in settings. Includes: essentials mute button + sound visualizer.",
+  "homepage": "https://github.com/MrZolf/RandomZenTweaks",
+  "style": "https://raw.githubusercontent.com/MrZolf/RandomZenTweaks/main/chrome.css",
+  "readme": "https://raw.githubusercontent.com/MrZolf/RandomZenTweaks/main/readme.md",
+  "preferences": "https://raw.githubusercontent.com/MrZolf/RandomZenTweaks/main/preferences.json",
+  "author": "MrZolf",
+  "version": "1.0.0",
+  "tags": ["essentials", "tabs", "audio", "tweaks"],
+  "createdAt": "2026-11-09",
+  "updatedAt": "2026-11-09"
+}

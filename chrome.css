@@ -1,0 +1,167 @@
+/*
+ * RandomZenTweaks – modular tweaks for Zen Browser
+ * Every module is wrapped in a @media -moz-pref(...) block,
+ * so it is only active when its checkbox is enabled in Sine settings.
+ *
+ * To add a new module:
+ *   1. add a checkbox (+ options) to preferences.json
+ *   2. add a new section below wrapped in
+ *      @media -moz-pref("mod.randomzentweaks.<module>.enabled") { ... }
+ */
+
+
+/* ==========================================================================
+   MODULE: Essentials mute button
+   Prefs: mod.randomzentweaks.essentials-mute.*
+   Position is relative to the essential tile (.tab-content), so it works
+   with and without the "Big Essentials" extension.
+   ========================================================================== */
+@media -moz-pref("mod.randomzentweaks.essentials-mute.enabled") {
+
+  /* default = top-right, overridden by the position blocks below */
+  #zen-essentials tab[zen-essential="true"] {
+    --rzt-mute-top: 3px;
+    --rzt-mute-right: 3px;
+    --rzt-mute-bottom: auto;
+    --rzt-mute-left: auto;
+  }
+
+  @media -moz-pref("mod.randomzentweaks.essentials-mute.position", "top-left") {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-mute-top: 3px;
+      --rzt-mute-right: auto;
+      --rzt-mute-bottom: auto;
+      --rzt-mute-left: 3px;
+    }
+  }
+
+  @media -moz-pref("mod.randomzentweaks.essentials-mute.position", "bottom-right") {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-mute-top: auto;
+      --rzt-mute-right: 3px;
+      --rzt-mute-bottom: 3px;
+      --rzt-mute-left: auto;
+    }
+  }
+
+  @media -moz-pref("mod.randomzentweaks.essentials-mute.position", "bottom-left") {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-mute-top: auto;
+      --rzt-mute-right: auto;
+      --rzt-mute-bottom: 3px;
+      --rzt-mute-left: 3px;
+    }
+  }
+
+  /* the button itself: hidden by default, shown on hover */
+  #zen-essentials tab[zen-essential="true"] .tab-icon-overlay {
+    position: absolute !important;
+    top: var(--rzt-mute-top) !important;
+    right: var(--rzt-mute-right) !important;
+    bottom: var(--rzt-mute-bottom) !important;
+    left: var(--rzt-mute-left) !important;
+    margin: 0 !important;
+    transform: none !important;
+
+    width: 18px !important;
+    height: 18px !important;
+    z-index: 20 !important;
+    border-radius: 50% !important;
+    background-color: color-mix(in srgb, var(--toolbar-bgcolor, #1c1b22) 75%, transparent) !important;
+
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  #zen-essentials tab[zen-essential="true"]:hover .tab-icon-overlay {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  /* optional: keep the icon visible permanently while muted */
+  @media -moz-pref("mod.randomzentweaks.essentials-mute.always-when-muted") {
+    #zen-essentials tab[zen-essential="true"][muted] .tab-icon-overlay {
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+    }
+  }
+}
+
+
+/* ==========================================================================
+   MODULE: Essentials sound visualizer
+   Prefs: mod.randomzentweaks.essentials-visualizer.*
+   ========================================================================== */
+@media -moz-pref("mod.randomzentweaks.essentials-visualizer.enabled") {
+
+  /* color: monochrome (default) */
+  #zen-essentials tab[zen-essential="true"] {
+    --rzt-eq-color: #d0d0d0;
+  }
+
+  /* color: Zen accent */
+  @media -moz-pref("mod.randomzentweaks.essentials-visualizer.color", "accent") {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: var(--zen-primary-color, var(--toolbar-color, #d0d0d0));
+    }
+  }
+
+  #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 20px;
+    height: 8px;
+    pointer-events: none;
+
+    background-repeat: no-repeat;
+    background-position:
+      center bottom,
+      calc(50% - 4px) bottom,
+      calc(50% + 4px) bottom,
+      calc(50% - 8px) bottom,
+      calc(50% + 8px) bottom;
+
+    background-size:
+      2px 5px,
+      2px 8px,
+      2px 6px,
+      2px 4px,
+      2px 3px;
+
+    background-image:
+      linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color)),
+      linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color)),
+      linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color)),
+      linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color)),
+      linear-gradient(var(--rzt-eq-color), var(--rzt-eq-color));
+
+    animation: rzt-essentials-equalizer 600ms ease-in-out infinite alternate;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
+      animation: none;
+    }
+  }
+}
+
+@keyframes rzt-essentials-equalizer {
+  from {
+    background-size: 2px 3px, 2px 5px, 2px 8px, 2px 2px, 2px 5px;
+  }
+  to {
+    background-size: 2px 7px, 2px 3px, 2px 4px, 2px 6px, 2px 8px;
+  }
+}
+
+
+/* ==========================================================================
+   NEW MODULES GO HERE
+   ========================================================================== */

@@ -1,0 +1,51 @@
+[
+  {
+    "type": "separator",
+    "label": "Module: Essentials mute button"
+  },
+  {
+    "property": "mod.randomzentweaks.essentials-mute.enabled",
+    "label": "Enable essentials mute button tweak",
+    "type": "checkbox",
+    "defaultValue": true
+  },
+  {
+    "property": "mod.randomzentweaks.essentials-mute.position",
+    "label": "Mute button corner",
+    "type": "dropdown",
+    "defaultValue": "top-right",
+    "options": [
+      { "label": "Top right", "value": "top-right" },
+      { "label": "Top left", "value": "top-left" },
+      { "label": "Bottom right", "value": "bottom-right" },
+      { "label": "Bottom left", "value": "bottom-left" }
+    ]
+  },
+  {
+    "property": "mod.randomzentweaks.essentials-mute.always-when-muted",
+    "label": "Always show the mute icon while the tab is muted",
+    "type": "checkbox",
+    "defaultValue": true
+  },
+
+  {
+    "type": "separator",
+    "label": "Module: Essentials sound visualizer"
+  },
+  {
+    "property": "mod.randomzentweaks.essentials-visualizer.enabled",
+    "label": "Enable essentials sound visualizer",
+    "type": "checkbox",
+    "defaultValue": true
+  },
+  {
+    "property": "mod.randomzentweaks.essentials-visualizer.color",
+    "label": "Visualizer color",
+    "type": "dropdown",
+    "defaultValue": "mono",
+    "options": [
+      { "label": "Monochrome", "value": "mono" },
+      { "label": "Zen accent color", "value": "accent" }
+    ]
+  }
+]
