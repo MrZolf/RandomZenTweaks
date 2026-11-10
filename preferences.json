@@ -108,8 +108,8 @@
     "placeholder": "Bars",
     "options": [
       {
-        "label": "Line",
-        "value": "line"
+        "label": "Wave",
+        "value": "wave"
       }
     ],
     "conditions": [
@@ -203,7 +203,7 @@
     "property": "mod.randomzentweaks.tab-notes.indicator",
     "label": "Note indicator",
     "type": "dropdown",
-    "placeholder": "Corner",
+    "placeholder": "Ribbon",
     "options": [
       {
         "label": "Icon",
@@ -220,18 +220,98 @@
     ]
   },
   {
+    "property": "mod.randomzentweaks.tab-notes.ribbon-corner",
+    "label": "Ribbon corner (essentials)",
+    "type": "dropdown",
+    "placeholder": "Right",
+    "options": [
+      {
+        "label": "Left",
+        "value": "left"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.tab-notes.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "property": "mod.randomzentweaks.tab-notes.icon-position",
+    "label": "Icon position (essentials)",
+    "type": "dropdown",
+    "placeholder": "Top left",
+    "options": [
+      {
+        "label": "Top right",
+        "value": "top-right"
+      },
+      {
+        "label": "Bottom right",
+        "value": "bottom-right"
+      },
+      {
+        "label": "Bottom left",
+        "value": "bottom-left"
+      },
+      {
+        "label": "Middle",
+        "value": "middle"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.tab-notes.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
     "property": "mod.randomzentweaks.tab-notes.color",
     "label": "Indicator color",
     "type": "dropdown",
-    "placeholder": "Zen accent color",
+    "placeholder": "Yellow",
     "options": [
       {
-        "label": "Yellow",
-        "value": "yellow"
+        "label": "Black",
+        "value": "black"
+      },
+      {
+        "label": "Blue",
+        "value": "blue"
+      },
+      {
+        "label": "Green",
+        "value": "green"
+      },
+      {
+        "label": "Orange",
+        "value": "orange"
+      },
+      {
+        "label": "Pink",
+        "value": "pink"
+      },
+      {
+        "label": "Purple",
+        "value": "purple"
       },
       {
         "label": "Red",
         "value": "red"
+      },
+      {
+        "label": "White",
+        "value": "white"
+      },
+      {
+        "label": "Zen accent color",
+        "value": "accent"
       }
     ],
     "conditions": [
