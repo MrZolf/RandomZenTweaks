@@ -3,13 +3,12 @@
     "property": "mod.randomzentweaks.essentials-audio.enabled",
     "label": "Essentials mute button and visualiser",
     "type": "checkbox",
-    "defaultValue": false
+    "defaultValue": true
   },
   {
     "property": "mod.randomzentweaks.essentials-audio.mute-position",
     "label": "Mute icon position",
     "type": "dropdown",
-    "placeholder": "Top right",
     "defaultValue": "top-right",
     "options": [
       {
@@ -29,7 +28,7 @@
         "value": "bottom-left"
       },
       {
-        "label": "Middle (slightly above the favicon)",
+        "label": "Middle",
         "value": "middle"
       }
     ],
@@ -46,20 +45,15 @@
     "property": "mod.randomzentweaks.essentials-audio.mute-style",
     "label": "Mute icon style",
     "type": "dropdown",
-    "placeholder": "Native",
-    "defaultValue": "native",
+    "defaultValue": "dark",
     "options": [
       {
-        "label": "Native (same as regular tabs)",
-        "value": "native"
+        "label": "Dark",
+        "value": "dark"
       },
       {
         "label": "Light",
         "value": "light"
-      },
-      {
-        "label": "Dark",
-        "value": "dark"
       }
     ],
     "conditions": [
@@ -75,7 +69,6 @@
     "property": "mod.randomzentweaks.essentials-audio.visualiser-mode",
     "label": "Sound visualiser",
     "type": "dropdown",
-    "placeholder": "Animated",
     "defaultValue": "animated",
     "options": [
       {
@@ -83,8 +76,36 @@
         "value": "animated"
       },
       {
-        "label": "None (mute icon is always visible)",
+        "label": "Real (may hinder browser performance)",
+        "value": "real"
+      },
+      {
+        "label": "None",
         "value": "none"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "property": "mod.randomzentweaks.essentials-audio.visualiser-style",
+    "label": "Sound visualiser style",
+    "type": "dropdown",
+    "defaultValue": "bars",
+    "options": [
+      {
+        "label": "Bars",
+        "value": "bars"
+      },
+      {
+        "label": "Line",
+        "value": "line"
       }
     ],
     "conditions": [
@@ -100,12 +121,15 @@
     "property": "mod.randomzentweaks.essentials-audio.visualiser-color",
     "label": "Visualiser color",
     "type": "dropdown",
-    "placeholder": "Monochrome",
-    "defaultValue": "mono",
+    "defaultValue": "mono-light",
     "options": [
       {
-        "label": "Monochrome",
-        "value": "mono"
+        "label": "Monochrome light",
+        "value": "mono-light"
+      },
+      {
+        "label": "Monochrome dark",
+        "value": "mono-dark"
       },
       {
         "label": "Zen accent color",
@@ -122,11 +146,10 @@
     ]
   },
   {
-    "property": "mod.randomzentweaks.essentials-audio.visualiser-width",
-    "label": "Visualiser width",
+    "property": "mod.randomzentweaks.essentials-audio.visualiser-size",
+    "label": "Visualiser size",
     "type": "dropdown",
-    "placeholder": "Small",
-    "defaultValue": "small",
+    "defaultValue": "medium",
     "options": [
       {
         "label": "Small",
@@ -137,7 +160,7 @@
         "value": "medium"
       },
       {
-        "label": "Large (full tile)",
+        "label": "Large",
         "value": "large"
       }
     ],
@@ -154,16 +177,15 @@
     "property": "mod.randomzentweaks.essentials-audio.visualiser-layer",
     "label": "Visualiser layer",
     "type": "dropdown",
-    "placeholder": "Above favicon",
-    "defaultValue": "above",
+    "defaultValue": "behind",
     "options": [
-      {
-        "label": "Above favicon",
-        "value": "above"
-      },
       {
         "label": "Behind favicon",
         "value": "behind"
+      },
+      {
+        "label": "Above favicon",
+        "value": "above"
       }
     ],
     "conditions": [

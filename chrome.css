@@ -3,8 +3,9 @@
  *
  * Every module is wrapped in @media (-moz-pref("<module>.enabled")).
  * When the module is off, NOTHING in this file is applied.
- * Dropdown defaults are the "base" rules; other choices only override them
- * (Sine does not write default prefs until the user changes them).
+ * Dropdown defaults are the "base" rules; other choices only override them.
+ * randomzentweaks.uc.js writes the default prefs on first start and drives
+ * the "Real" visualiser (sets --rzt-l0..8 and [rzt-live] on the tab).
  *
  * Every user-visible text (preferences.json) is English.
  */
@@ -15,19 +16,27 @@
    ========================================================================== */
 @media (-moz-pref("mod.randomzentweaks.essentials-audio.enabled")) {
 
-  /* ---- defaults: mute top-right, native style, mono, small, above favicon ---- */
+  /* ---- defaults: top-right, dark icon, bars, mono light, medium, behind ---- */
   #zen-essentials tab[zen-essential="true"] {
-    --rzt-mute-inset: 6px;
+    --rzt-mute-inset: 8px;
     --rzt-mute-top: var(--rzt-mute-inset);
     --rzt-mute-right: var(--rzt-mute-inset);
     --rzt-mute-bottom: auto;
     --rzt-mute-left: auto;
     --rzt-mute-translate: none;
+    --rzt-mute-bg: rgba(28, 27, 34, 0.92);
+    --rzt-mute-fg: #f0f0f4;
 
     --rzt-eq-color: #d0d0d0;
-    --rzt-eq-w: 20px;
-    --rzt-eq-h: 8px;
-    --rzt-bar-w: 2px;
+    --rzt-eq-w: 34px;
+    --rzt-eq-h: 12px;
+    --rzt-bar-w: 3px;
+    --rzt-line-h: 2px;
+    --rzt-eq-z: -1;
+
+    --rzt-hump-1: color-mix(in srgb, var(--rzt-eq-color) 90%, transparent);
+    --rzt-hump-2: color-mix(in srgb, var(--rzt-eq-color) 60%, transparent);
+    --rzt-hump-3: color-mix(in srgb, var(--rzt-eq-color) 40%, transparent);
   }
 
   /* ---- mute icon: position ---- */
@@ -55,9 +64,8 @@
       --rzt-mute-left: var(--rzt-mute-inset);
     }
   }
-  /* middle: centred horizontally, sitting just above the favicon and
-     overlapping it slightly. Tune --rzt-mute-middle-lift if your favicons
-     are bigger (e.g. with Big Essentials). */
+  /* middle: centred horizontally, just above the favicon, overlapping it slightly.
+     Tune --rzt-mute-middle-lift for bigger favicons (e.g. Big Essentials). */
   @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-position", "middle")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-mute-middle-lift: 18px;
@@ -66,6 +74,14 @@
       --rzt-mute-bottom: auto;
       --rzt-mute-left: 50%;
       --rzt-mute-translate: -50% -50%;
+    }
+  }
+
+  /* ---- mute icon: style (dark = default) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-style", "light")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-mute-bg: rgba(245, 245, 250, 0.92);
+      --rzt-mute-fg: #1c1b22;
     }
   }
 
@@ -88,6 +104,14 @@
     height: 18px !important;
     z-index: 20 !important;
 
+    border-radius: 50% !important;
+    outline: none !important;
+    background-image: none !important;
+    background-color: var(--rzt-mute-bg) !important;
+    color: var(--rzt-mute-fg) !important;
+    -moz-context-properties: fill !important;
+    fill: currentColor !important;
+
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
@@ -101,54 +125,44 @@
     pointer-events: auto !important;
   }
 
-  /* ---- mute icon: style (native = Firefox/Zen styling of regular tabs, untouched) ---- */
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-style", "light")) {
-    #zen-essentials tab[zen-essential="true"] .tab-icon-overlay {
-      border-radius: 50% !important;
-      outline: none !important;
-      background-image: none !important;
-      background-color: rgba(245, 245, 250, 0.92) !important;
-      color: #1c1b22 !important;
-      -moz-context-properties: fill !important;
-      fill: currentColor !important;
+  /* ---- visualiser: color (mono light = default) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "mono-dark")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: #55555c;
     }
   }
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-style", "dark")) {
-    #zen-essentials tab[zen-essential="true"] .tab-icon-overlay {
-      border-radius: 50% !important;
-      outline: none !important;
-      background-image: none !important;
-      background-color: rgba(28, 27, 34, 0.92) !important;
-      color: #f0f0f4 !important;
-      -moz-context-properties: fill !important;
-      fill: currentColor !important;
-    }
-  }
-
-  /* ---- visualiser: color ---- */
   @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "accent")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-eq-color: var(--zen-primary-color, var(--toolbar-color, #d0d0d0));
     }
   }
 
-  /* ---- visualiser: width (small = default) ---- */
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-width", "medium")) {
+  /* ---- visualiser: size (medium = default) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-size", "small")) {
     #zen-essentials tab[zen-essential="true"] {
-      --rzt-eq-w: 34px;
-      --rzt-eq-h: 12px;
-      --rzt-bar-w: 3px;
+      --rzt-eq-w: 20px;
+      --rzt-eq-h: 8px;
+      --rzt-bar-w: 2px;
+      --rzt-line-h: 2px;
     }
   }
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-width", "large")) {
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-size", "large")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-eq-w: calc(100% - 16px);
       --rzt-eq-h: 45%;
       --rzt-bar-w: 7%;
+      --rzt-line-h: 3px;
     }
   }
 
-  /* ---- visualiser: 5 bars (small, medium) ---- */
+  /* ---- visualiser: layer (behind = default) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-layer", "above")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-z: 1;
+    }
+  }
+
+  /* ---- visualiser: bars, 5 bars (small, medium) ---- */
   #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
     content: "";
     position: absolute;
@@ -158,6 +172,7 @@
 
     width: var(--rzt-eq-w);
     height: var(--rzt-eq-h);
+    z-index: var(--rzt-eq-z);
     pointer-events: none;
 
     background-repeat: no-repeat;
@@ -183,8 +198,8 @@
     animation: rzt-equalizer-5 3s ease-in-out infinite;
   }
 
-  /* ---- visualiser: 9 bars (large, whole tile) ---- */
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-width", "large")) {
+  /* ---- visualiser: bars, 9 bars (large) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-size", "large")) {
     #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
       bottom: 6px;
       background-position:
@@ -222,14 +237,68 @@
     }
   }
 
-  /* ---- visualiser: layer (above = default) ---- */
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-layer", "behind")) {
+  /* ---- visualiser: line (soft waves along a thin line) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-style", "line")) {
     #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
-      z-index: -1;
+      bottom: 5px;
+      background-position:
+        0% 100%,
+        100% 100%,
+        50% 100%,
+        0% 100%;
+      background-size:
+        55% 60%,
+        40% 80%,
+        30% 50%,
+        100% var(--rzt-line-h);
+      background-image:
+        radial-gradient(ellipse 50% 100% at 50% 100%, var(--rzt-hump-1), transparent),
+        radial-gradient(ellipse 50% 100% at 50% 100%, var(--rzt-hump-2), transparent),
+        radial-gradient(ellipse 50% 100% at 50% 100%, var(--rzt-hump-3), transparent),
+        linear-gradient(90deg, transparent, var(--rzt-eq-color) 15%, var(--rzt-eq-color) 85%, transparent);
+      animation: rzt-line 4.5s ease-in-out infinite;
     }
   }
 
-  /* ---- visualiser: none -> no bars, mute icon always visible while audio is active ---- */
+  /* ---- visualiser: real (driven by randomzentweaks.uc.js; falls back to animated when [rzt-live] is absent) ---- */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-mode", "real")) {
+    #zen-essentials tab[zen-essential="true"][soundplaying][rzt-live]:not([muted]) .tab-content::after {
+      animation: none;
+      transition: background-size 90ms linear;
+      background-size:
+        var(--rzt-bar-w) max(10%, calc(var(--rzt-l4) * 1%)),
+        var(--rzt-bar-w) max(10%, calc(var(--rzt-l2) * 1%)),
+        var(--rzt-bar-w) max(10%, calc(var(--rzt-l6) * 1%)),
+        var(--rzt-bar-w) max(10%, calc(var(--rzt-l0) * 1%)),
+        var(--rzt-bar-w) max(10%, calc(var(--rzt-l8) * 1%));
+    }
+    @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-size", "large")) {
+      #zen-essentials tab[zen-essential="true"][soundplaying][rzt-live]:not([muted]) .tab-content::after {
+        background-size:
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l0) * 1%)),
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l1) * 1%)),
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l2) * 1%)),
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l3) * 1%)),
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l4) * 1%)),
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l5) * 1%)),
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l6) * 1%)),
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l7) * 1%)),
+          var(--rzt-bar-w) max(10%, calc(var(--rzt-l8) * 1%));
+      }
+    }
+    @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-style", "line")) {
+      #zen-essentials tab[zen-essential="true"][soundplaying][rzt-live]:not([muted]) .tab-content::after {
+        animation: rzt-line-drift 6s ease-in-out infinite;
+        background-size:
+          55% max(10%, calc(var(--rzt-lo) * 1%)),
+          40% max(10%, calc(var(--rzt-mid) * 1%)),
+          30% max(10%, calc(var(--rzt-hi) * 1%)),
+          100% var(--rzt-line-h);
+      }
+    }
+  }
+
+  /* ---- visualiser: none -> no visualiser, mute icon always visible while audio is active ---- */
   @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-mode", "none")) {
     #zen-essentials tab[zen-essential="true"] .tab-content::after {
       content: none !important;
@@ -245,12 +314,12 @@
 
   @media (prefers-reduced-motion: reduce) {
     #zen-essentials tab[zen-essential="true"][soundplaying]:not([muted]) .tab-content::after {
-      animation: none;
+      animation: none !important;
     }
   }
 }
 
-/* Longer, pseudo-random patterns (generated once, loops seamlessly) */
+/* Pseudo-random patterns (generated once, loop seamlessly) */
 @keyframes rzt-equalizer-5 {
   0% {
     background-size:
@@ -594,6 +663,103 @@
       var(--rzt-bar-w) 41%,
       var(--rzt-bar-w) 74%,
       var(--rzt-bar-w) 79%;
+  }
+}
+
+@keyframes rzt-line {
+  0% {
+    background-position: 79% 100%, 32% 100%, 94% 100%, 0% 100%;
+    background-size: 55% 70%, 40% 92%, 30% 28%, 100% var(--rzt-line-h);
+  }
+  8.33% {
+    background-position: 59% 100%, 99% 100%, 31% 100%, 0% 100%;
+    background-size: 55% 31%, 40% 45%, 30% 39%, 100% var(--rzt-line-h);
+  }
+  16.67% {
+    background-position: 47% 100%, 60% 100%, 31% 100%, 0% 100%;
+    background-size: 55% 73%, 40% 94%, 30% 38%, 100% var(--rzt-line-h);
+  }
+  25% {
+    background-position: 73% 100%, 31% 100%, 1% 100%, 0% 100%;
+    background-size: 55% 52%, 40% 77%, 30% 60%, 100% var(--rzt-line-h);
+  }
+  33.33% {
+    background-position: 23% 100%, 98% 100%, 49% 100%, 0% 100%;
+    background-size: 55% 45%, 40% 34%, 30% 42%, 100% var(--rzt-line-h);
+  }
+  41.67% {
+    background-position: 79% 100%, 79% 100%, 56% 100%, 0% 100%;
+    background-size: 55% 41%, 40% 41%, 30% 25%, 100% var(--rzt-line-h);
+  }
+  50% {
+    background-position: 0% 100%, 26% 100%, 99% 100%, 0% 100%;
+    background-size: 55% 52%, 40% 46%, 30% 46%, 100% var(--rzt-line-h);
+  }
+  58.33% {
+    background-position: 37% 100%, 40% 100%, 25% 100%, 0% 100%;
+    background-size: 55% 94%, 40% 51%, 30% 48%, 100% var(--rzt-line-h);
+  }
+  66.67% {
+    background-position: 88% 100%, 25% 100%, 49% 100%, 0% 100%;
+    background-size: 55% 63%, 40% 27%, 30% 71%, 100% var(--rzt-line-h);
+  }
+  75% {
+    background-position: 53% 100%, 21% 100%, 18% 100%, 0% 100%;
+    background-size: 55% 58%, 40% 33%, 30% 67%, 100% var(--rzt-line-h);
+  }
+  83.33% {
+    background-position: 38% 100%, 77% 100%, 75% 100%, 0% 100%;
+    background-size: 55% 25%, 40% 68%, 30% 33%, 100% var(--rzt-line-h);
+  }
+  91.67% {
+    background-position: 39% 100%, 45% 100%, 39% 100%, 0% 100%;
+    background-size: 55% 86%, 40% 65%, 30% 48%, 100% var(--rzt-line-h);
+  }
+  100% {
+    background-position: 79% 100%, 32% 100%, 94% 100%, 0% 100%;
+    background-size: 55% 70%, 40% 92%, 30% 28%, 100% var(--rzt-line-h);
+  }
+}
+
+@keyframes rzt-line-drift {
+  0% {
+    background-position: 79% 100%, 32% 100%, 94% 100%, 0% 100%;
+  }
+  8.33% {
+    background-position: 59% 100%, 99% 100%, 31% 100%, 0% 100%;
+  }
+  16.67% {
+    background-position: 47% 100%, 60% 100%, 31% 100%, 0% 100%;
+  }
+  25% {
+    background-position: 73% 100%, 31% 100%, 1% 100%, 0% 100%;
+  }
+  33.33% {
+    background-position: 23% 100%, 98% 100%, 49% 100%, 0% 100%;
+  }
+  41.67% {
+    background-position: 79% 100%, 79% 100%, 56% 100%, 0% 100%;
+  }
+  50% {
+    background-position: 0% 100%, 26% 100%, 99% 100%, 0% 100%;
+  }
+  58.33% {
+    background-position: 37% 100%, 40% 100%, 25% 100%, 0% 100%;
+  }
+  66.67% {
+    background-position: 88% 100%, 25% 100%, 49% 100%, 0% 100%;
+  }
+  75% {
+    background-position: 53% 100%, 21% 100%, 18% 100%, 0% 100%;
+  }
+  83.33% {
+    background-position: 38% 100%, 77% 100%, 75% 100%, 0% 100%;
+  }
+  91.67% {
+    background-position: 39% 100%, 45% 100%, 39% 100%, 0% 100%;
+  }
+  100% {
+    background-position: 79% 100%, 32% 100%, 94% 100%, 0% 100%;
   }
 }
 
