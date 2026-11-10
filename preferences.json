@@ -9,12 +9,8 @@
     "property": "mod.randomzentweaks.essentials-audio.mute-position",
     "label": "Mute icon position",
     "type": "dropdown",
-    "defaultValue": "top-right",
+    "placeholder": "Top right",
     "options": [
-      {
-        "label": "Top right",
-        "value": "top-right"
-      },
       {
         "label": "Top left",
         "value": "top-left"
@@ -45,12 +41,8 @@
     "property": "mod.randomzentweaks.essentials-audio.mute-style",
     "label": "Mute icon style",
     "type": "dropdown",
-    "defaultValue": "dark",
+    "placeholder": "Dark",
     "options": [
-      {
-        "label": "Dark",
-        "value": "dark"
-      },
       {
         "label": "Light",
         "value": "light"
@@ -66,22 +58,38 @@
     ]
   },
   {
+    "property": "mod.randomzentweaks.essentials-audio.mute-size",
+    "label": "Mute icon size",
+    "type": "dropdown",
+    "placeholder": "Medium",
+    "options": [
+      {
+        "label": "Small",
+        "value": "small"
+      },
+      {
+        "label": "Big",
+        "value": "big"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
     "property": "mod.randomzentweaks.essentials-audio.visualiser-mode",
     "label": "Sound visualiser",
     "type": "dropdown",
-    "defaultValue": "animated",
+    "placeholder": "Animated",
     "options": [
       {
-        "label": "Animated",
-        "value": "animated"
-      },
-      {
-        "label": "Real (may hinder browser performance)",
-        "value": "real"
-      },
-      {
         "label": "None",
-        "value": "none"
+        "value": "off"
       }
     ],
     "conditions": [
@@ -97,12 +105,8 @@
     "property": "mod.randomzentweaks.essentials-audio.visualiser-style",
     "label": "Sound visualiser style",
     "type": "dropdown",
-    "defaultValue": "bars",
+    "placeholder": "Bars",
     "options": [
-      {
-        "label": "Bars",
-        "value": "bars"
-      },
       {
         "label": "Line",
         "value": "line"
@@ -121,12 +125,8 @@
     "property": "mod.randomzentweaks.essentials-audio.visualiser-color",
     "label": "Visualiser color",
     "type": "dropdown",
-    "defaultValue": "mono-light",
+    "placeholder": "Monochrome light",
     "options": [
-      {
-        "label": "Monochrome light",
-        "value": "mono-light"
-      },
       {
         "label": "Monochrome dark",
         "value": "mono-dark"
@@ -149,15 +149,11 @@
     "property": "mod.randomzentweaks.essentials-audio.visualiser-size",
     "label": "Visualiser size",
     "type": "dropdown",
-    "defaultValue": "medium",
+    "placeholder": "Medium",
     "options": [
       {
         "label": "Small",
         "value": "small"
-      },
-      {
-        "label": "Medium",
-        "value": "medium"
       },
       {
         "label": "Large",
@@ -177,12 +173,8 @@
     "property": "mod.randomzentweaks.essentials-audio.visualiser-layer",
     "label": "Visualiser layer",
     "type": "dropdown",
-    "defaultValue": "behind",
+    "placeholder": "Behind favicon",
     "options": [
-      {
-        "label": "Behind favicon",
-        "value": "behind"
-      },
       {
         "label": "Above favicon",
         "value": "above"
@@ -192,6 +184,60 @@
       {
         "if": {
           "property": "mod.randomzentweaks.essentials-audio.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "type": "separator",
+    "label": "Tab notes"
+  },
+  {
+    "property": "mod.randomzentweaks.tab-notes.enabled",
+    "label": "Tab notes",
+    "type": "checkbox",
+    "defaultValue": true
+  },
+  {
+    "property": "mod.randomzentweaks.tab-notes.indicator",
+    "label": "Note indicator",
+    "type": "dropdown",
+    "placeholder": "Corner",
+    "options": [
+      {
+        "label": "Icon",
+        "value": "icon"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.tab-notes.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "property": "mod.randomzentweaks.tab-notes.color",
+    "label": "Indicator color",
+    "type": "dropdown",
+    "placeholder": "Zen accent color",
+    "options": [
+      {
+        "label": "Yellow",
+        "value": "yellow"
+      },
+      {
+        "label": "Red",
+        "value": "red"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.tab-notes.enabled",
           "value": true
         }
       }
