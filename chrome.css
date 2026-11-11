@@ -64,9 +64,18 @@
       --rzt-mute-left: var(--rzt-mute-inset);
     }
   }
-  /* middle: centred on the favicon, shifted only slightly up so it overlaps it a lot
-     and never sticks out of the tile (even at the big size). */
-  @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-position", "middle")) {
+  /* middle high: centred, well above the favicon centre (18px) */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-position", "middle-high")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-mute-top: calc(50% - 18px * var(--rzt-mute-scale));
+      --rzt-mute-right: auto;
+      --rzt-mute-bottom: auto;
+      --rzt-mute-left: 50%;
+      --rzt-mute-translate: -50% -50%;
+    }
+  }
+  /* middle low: centred, only slightly above the favicon centre (9px) - overlaps the favicon a lot */
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.mute-position", "middle-low")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-mute-top: calc(50% - 9px * var(--rzt-mute-scale));
       --rzt-mute-right: auto;
@@ -141,6 +150,41 @@
   @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "mono-dark")) {
     #zen-essentials tab[zen-essential="true"] {
       --rzt-eq-color: #55555c;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "blue")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: #4f8cff;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "green")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: #4caf50;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "orange")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: #ff9800;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "pink")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: #f06292;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "purple")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: #9c6ade;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "red")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: #ef5350;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "yellow")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-eq-color: #f5c542;
     }
   }
   @media (-moz-pref("mod.randomzentweaks.essentials-audio.visualiser-color", "accent")) {
@@ -726,7 +770,7 @@
   .rzt-note-ribbon {
     position: absolute;
     top: 0;
-    right: 14px;
+    right: 30%;
     width: 12px;
     height: 16px;
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%);
@@ -747,15 +791,17 @@
     height: 16px;
     mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20fill='black'%20d='M3%201.5h10A1.5%201.5%200%200%201%2014.5%203v5.5h-4a2%202%200%200%200-2%202v4H3A1.5%201.5%200%200%201%201.5%2013V3A1.5%201.5%200%200%201%203%201.5Z'/%3E%3Cpath%20fill='black'%20fill-opacity='0.55'%20d='M14.5%209.5%209.5%2014.5v-3a2%202%200%200%201%202-2Z'/%3E%3C/svg%3E") center / 16px 16px no-repeat;
   }
-  /* regular tabs: sits in the tab row, right after the mute button, same size as it */
+  /* regular tabs: sits in the tab row, right after the mute button, same size as it,
+     with a bigger gap to the tab name */
   .rzt-note-icon.rzt-note-inline {
     position: static;
     flex: none;
     align-self: center;
     width: 24px;
     height: 24px;
+    margin-inline-end: 8px;
   }
-  /* essentials: placed like the mute icon (default: top left) */
+  /* essentials: placed exactly like the mute icon positions (default: top left) */
   #zen-essentials tab[zen-essential="true"] {
     --rzt-note-top: 9px;
     --rzt-note-right: auto;
@@ -787,10 +833,18 @@
       --rzt-note-left: 9px;
     }
   }
-  /* middle: mirrors the mute icon - centred, slightly BELOW the favicon, so both can coexist */
-  @media (-moz-pref("mod.randomzentweaks.tab-notes.icon-position", "middle")) {
+  @media (-moz-pref("mod.randomzentweaks.tab-notes.icon-position", "middle-high")) {
     #zen-essentials tab[zen-essential="true"] {
-      --rzt-note-top: calc(50% + 9px);
+      --rzt-note-top: calc(50% - 18px);
+      --rzt-note-right: auto;
+      --rzt-note-bottom: auto;
+      --rzt-note-left: 50%;
+      --rzt-note-translate: -50% -50%;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.tab-notes.icon-position", "middle-low")) {
+    #zen-essentials tab[zen-essential="true"] {
+      --rzt-note-top: calc(50% - 9px);
       --rzt-note-right: auto;
       --rzt-note-bottom: auto;
       --rzt-note-left: 50%;
@@ -806,26 +860,44 @@
     translate: var(--rzt-note-translate);
   }
 
-  /* ---- context menu icon (same glyph as the indicator) ---- */
-  #context_rzt-add-note {
-    list-style-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20fill='context-fill'%20d='M3%201.5h10A1.5%201.5%200%200%201%2014.5%203v5.5h-4a2%202%200%200%200-2%202v4H3A1.5%201.5%200%200%201%201.5%2013V3A1.5%201.5%200%200%201%203%201.5Z'/%3E%3Cpath%20fill='context-fill'%20fill-opacity='0.55'%20d='M14.5%209.5%209.5%2014.5v-3a2%202%200%200%201%202-2Z'/%3E%3C/svg%3E");
-    -moz-context-properties: fill;
-    fill: currentColor;
+  /* ---- context menu icon: the color is injected by the script as --rzt-menu-icon ---- */
+  #context_rzt-add-note:not([rzt-iconic]) {
+    padding-inline-start: 32px;
+    background: var(--rzt-menu-icon) no-repeat 8px center / 16px 16px;
+  }
+  #context_rzt-add-note[rzt-iconic],
+  #context_rzt-add-note[rzt-iconic] .menu-icon,
+  #context_rzt-add-note[rzt-iconic] .menu-iconic-icon {
+    list-style-image: var(--rzt-menu-icon);
+  }
+
+  /* ---- transparent layer under the window while editing (swallows the closing click) ---- */
+  .rzt-note-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 2147482999;
+    display: none;
+  }
+  .rzt-note-scrim[active] {
+    display: block;
   }
 
   /* ---- the note window: uses the Zen colors of the current space ---- */
   .rzt-note-card {
     --rzt-accent: var(--zen-primary-color, #6c8cff);
+    --rzt-card-w: 300px;
+    --rzt-card-min: 76px;
+    --rzt-card-max: 240px;
 
     position: fixed;
     z-index: 2147483000;
     box-sizing: border-box;
-    width: 300px;
+    width: var(--rzt-card-w);
     max-width: calc(100vw - 16px);
-    padding: 12px;
+    padding: 6px 8px 8px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
 
     color: var(--toolbar-color, #f0f0f4);
     background: color-mix(in srgb, var(--rzt-accent) 16%, var(--zen-colors-secondary, var(--toolbar-bgcolor, #1c1b22)));
@@ -847,49 +919,111 @@
     transform: none;
     transition-delay: 0s;
   }
+  @media (-moz-pref("mod.randomzentweaks.tab-notes.window-size", "small")) {
+    .rzt-note-card {
+      --rzt-card-w: 240px;
+      --rzt-card-min: 52px;
+      --rzt-card-max: 170px;
+    }
+  }
+  @media (-moz-pref("mod.randomzentweaks.tab-notes.window-size", "large")) {
+    .rzt-note-card {
+      --rzt-card-w: 400px;
+      --rzt-card-min: 120px;
+      --rzt-card-max: 360px;
+    }
+  }
 
   .rzt-note-head {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 8px;
     min-width: 0;
+    min-height: 24px;
+    padding-inline: 2px;
     font-size: 11px;
   }
   .rzt-note-label {
-    color: var(--rzt-accent);
+    color: var(--toolbar-color, #f0f0f4);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 600;
+    letter-spacing: 0.08em;
+    font-weight: 700;
   }
   .rzt-note-title {
+    flex: 1;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    opacity: 0.65;
+    opacity: 0.6;
   }
+
+  /* formatting buttons, top right */
+  .rzt-note-fmt {
+    display: flex;
+    gap: 2px;
+    flex: none;
+  }
+  .rzt-note-fmt-btn {
+    box-sizing: border-box;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    opacity: 0.8;
+  }
+  .rzt-note-fmt-btn:hover {
+    opacity: 1;
+    background: color-mix(in srgb, currentColor 14%, transparent);
+  }
+  .rzt-note-fmt-btn.active {
+    opacity: 1;
+    background: color-mix(in srgb, var(--rzt-accent) 45%, transparent);
+  }
+  .rzt-fmt-bold { font-weight: 800; }
+  .rzt-fmt-italic { font-style: italic; }
+  .rzt-fmt-underline { text-decoration: underline; }
+  .rzt-fmt-strikeThrough { text-decoration: line-through; }
 
   .rzt-note-text {
     box-sizing: border-box;
     width: 100%;
-    min-height: 84px;
-    max-height: 240px;
-    padding: 8px 10px;
-    resize: none;
+    min-height: var(--rzt-card-min);
+    max-height: var(--rzt-card-max);
+    overflow-y: auto;
+    padding: 6px 8px;
     color: inherit;
-    caret-color: var(--rzt-accent);
+    caret-color: var(--toolbar-color, #f0f0f4);
     font: inherit;
     line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    cursor: text;
+    -moz-user-select: text;
+    user-select: text;
     background: color-mix(in srgb, var(--rzt-accent) 12%, transparent);
     border: 1px solid color-mix(in srgb, var(--rzt-accent) 28%, transparent);
-    border-radius: 10px;
+    border-radius: 9px;
     outline: none;
   }
   .rzt-note-text:focus {
     border-color: var(--rzt-accent);
   }
+  .rzt-note-text:empty::before {
+    content: attr(data-placeholder);
+    opacity: 0.5;
+    pointer-events: none;
+  }
   .rzt-note-text::selection {
-    background: color-mix(in srgb, var(--rzt-accent) 45%, transparent);
+    color: inherit;
+    background: color-mix(in srgb, var(--toolbar-color, #f0f0f4) 38%, transparent);
   }
 }
 

@@ -24,8 +24,12 @@
         "value": "bottom-left"
       },
       {
-        "label": "Middle",
-        "value": "middle"
+        "label": "Middle high",
+        "value": "middle-high"
+      },
+      {
+        "label": "Middle low",
+        "value": "middle-low"
       }
     ],
     "conditions": [
@@ -128,8 +132,36 @@
     "placeholder": "Monochrome light",
     "options": [
       {
+        "label": "Blue",
+        "value": "blue"
+      },
+      {
+        "label": "Green",
+        "value": "green"
+      },
+      {
         "label": "Monochrome dark",
         "value": "mono-dark"
+      },
+      {
+        "label": "Orange",
+        "value": "orange"
+      },
+      {
+        "label": "Pink",
+        "value": "pink"
+      },
+      {
+        "label": "Purple",
+        "value": "purple"
+      },
+      {
+        "label": "Red",
+        "value": "red"
+      },
+      {
+        "label": "Yellow",
+        "value": "yellow"
       },
       {
         "label": "Zen accent color",
@@ -221,7 +253,7 @@
   },
   {
     "property": "mod.randomzentweaks.tab-notes.ribbon-corner",
-    "label": "Ribbon corner (essentials)",
+    "label": "Ribbon corner on essentials",
     "type": "dropdown",
     "placeholder": "Right",
     "options": [
@@ -236,12 +268,19 @@
           "property": "mod.randomzentweaks.tab-notes.enabled",
           "value": true
         }
+      },
+      {
+        "not": {
+          "property": "mod.randomzentweaks.tab-notes.indicator",
+          "value": "icon"
+        }
       }
-    ]
+    ],
+    "operator": "AND"
   },
   {
     "property": "mod.randomzentweaks.tab-notes.icon-position",
-    "label": "Icon position (essentials)",
+    "label": "Icon position on essentials",
     "type": "dropdown",
     "placeholder": "Top left",
     "options": [
@@ -258,8 +297,12 @@
         "value": "bottom-left"
       },
       {
-        "label": "Middle",
-        "value": "middle"
+        "label": "Middle high",
+        "value": "middle-high"
+      },
+      {
+        "label": "Middle low",
+        "value": "middle-low"
       }
     ],
     "conditions": [
@@ -268,8 +311,15 @@
           "property": "mod.randomzentweaks.tab-notes.enabled",
           "value": true
         }
+      },
+      {
+        "if": {
+          "property": "mod.randomzentweaks.tab-notes.indicator",
+          "value": "icon"
+        }
       }
-    ]
+    ],
+    "operator": "AND"
   },
   {
     "property": "mod.randomzentweaks.tab-notes.color",
@@ -312,6 +362,30 @@
       {
         "label": "Zen accent color",
         "value": "accent"
+      }
+    ],
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.randomzentweaks.tab-notes.enabled",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "property": "mod.randomzentweaks.tab-notes.window-size",
+    "label": "Note window size",
+    "type": "dropdown",
+    "placeholder": "Medium",
+    "options": [
+      {
+        "label": "Small",
+        "value": "small"
+      },
+      {
+        "label": "Large",
+        "value": "large"
       }
     ],
     "conditions": [

@@ -28,20 +28,33 @@
   };
 
   const VALID_DROPDOWN_VALUES = {
-    "essentials-audio.mute-position": ["top-left", "bottom-right", "bottom-left", "middle"],
+    "essentials-audio.mute-position": [
+      "top-left", "bottom-right", "bottom-left", "middle-high", "middle-low",
+    ],
     "essentials-audio.mute-style": ["light"],
     "essentials-audio.mute-size": ["small", "big"],
     "essentials-audio.visualiser-mode": ["off"],
     "essentials-audio.visualiser-style": ["wave"],
-    "essentials-audio.visualiser-color": ["mono-dark", "accent"],
+    "essentials-audio.visualiser-color": [
+      "blue", "green", "mono-dark", "orange", "pink", "purple", "red", "yellow", "accent",
+    ],
     "essentials-audio.visualiser-size": ["small", "large"],
     "essentials-audio.visualiser-layer": ["above"],
     "tab-notes.indicator": ["icon"],
     "tab-notes.ribbon-corner": ["left"],
-    "tab-notes.icon-position": ["top-right", "bottom-right", "bottom-left", "middle"],
+    "tab-notes.icon-position": [
+      "top-right", "bottom-right", "bottom-left", "middle-high", "middle-low",
+    ],
+    "tab-notes.window-size": ["small", "large"],
     "tab-notes.color": [
       "black", "blue", "green", "orange", "pink", "purple", "red", "white", "accent",
     ],
+  };
+
+  // values that were renamed between versions
+  const MIGRATIONS = {
+    "essentials-audio.mute-position": { middle: "middle-low" },
+    "essentials-audio.visualiser-style": { line: "wave" },
   };
 
   function seedCheckboxes() {
@@ -62,9 +75,17 @@
     const name = ROOT + key;
     try {
       if (!p.prefHasUserValue(name)) return;
-      if (p.getPrefType(name) !== p.PREF_STRING || !valid.includes(p.getStringPref(name))) {
+      if (p.getPrefType(name) !== p.PREF_STRING) {
         p.clearUserPref(name);
+        return;
       }
+      let value = p.getStringPref(name);
+      const migrated = MIGRATIONS[key]?.[value];
+      if (migrated) {
+        value = migrated;
+        p.setStringPref(name, value);
+      }
+      if (!valid.includes(value)) p.clearUserPref(name);
     } catch (e) {
       console.error(LOG, "could not sanitise", key, e);
     }
@@ -82,11 +103,15 @@
   //  2. in <profile>/randomzentweaks-notes.json, keyed by the tab's id - this
   //     is what makes a note survive closing the browser / rebooting even for
   //     pinned tabs and Essentials, which Zen rebuilds on its own.
+  //
+  // A note is a tiny subset of HTML (b, i, u, s, br). It is never inserted
+  // with innerHTML: it is parsed, whitelisted and rebuilt node by node.
   // ---------------------------------------------------------------------
   const TabNotes = (() => {
     const PREF_ENABLED = ROOT + "tab-notes.enabled";
     const PREF_INDICATOR = ROOT + "tab-notes.indicator";
     const KEY = "rzt-note";
+    const HTML_PREFIX = "rzt:html:";
     const XHTML = "http://www.w3.org/1999/xhtml";
     const STORE_FILE = PathUtils.join(PathUtils.profileDir, "randomzentweaks-notes.json");
     const SS =
@@ -94,9 +119,18 @@
         ? SessionStore
         : ChromeUtils.importESModule("resource:///modules/sessionstore/SessionStore.sys.mjs").SessionStore;
 
+    const FORMAT_TAGS = { B: "b", STRONG: "b", I: "i", EM: "i", U: "u", S: "s", STRIKE: "s", DEL: "s" };
+    const FORMAT_BUTTONS = [
+      ["bold", "B", "Bold"],
+      ["italic", "I", "Italic"],
+      ["underline", "U", "Underline"],
+      ["strikeThrough", "S", "Strikethrough"],
+    ];
+
     let enabled = false;
     let menuItem = null;
     let card = null;
+    let scrim = null;
     const els = {};
     let cardTab = null;
     let cardMode = null; // "peek" (hover) | "edit"
@@ -105,9 +139,11 @@
     let showTimer = 0;
     let hideTimer = 0;
     let saveTimer = 0;
+    let scrimTimer = 0;
     let anchorEl = null;
+    let overIndicator = false;
 
-    let store = {}; // tab id -> { t: text, u: updated }
+    let store = {}; // tab id -> { t: stored value, u: updated }
     let flushTimer = 0;
 
     const h = (tag, cls, text) => {
@@ -116,6 +152,64 @@
       if (text) el.textContent = text;
       return el;
     };
+
+    // ---- note format helpers ----
+    const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const hasText = (html) => html.replace(/<[^>]*>/g, "").trim().length > 0;
+    const rawToHtml = (raw) =>
+      raw.startsWith(HTML_PREFIX) ? raw.slice(HTML_PREFIX.length) : esc(raw).replace(/\r?\n/g, "<br>");
+
+    function serialize(root) {
+      let out = "";
+      const walk = (node) => {
+        for (const n of node.childNodes) {
+          if (n.nodeType === Node.TEXT_NODE) {
+            out += esc(n.nodeValue);
+          } else if (n.nodeType === Node.ELEMENT_NODE) {
+            const tag = n.localName.toUpperCase();
+            if (tag === "BR") {
+              out += "<br>";
+            } else if (FORMAT_TAGS[tag]) {
+              const t = FORMAT_TAGS[tag];
+              out += "<" + t + ">";
+              walk(n);
+              out += "</" + t + ">";
+            } else if (tag === "DIV" || tag === "P") {
+              if (out && !out.endsWith("<br>")) out += "<br>";
+              walk(n);
+            } else {
+              walk(n);
+            }
+          }
+        }
+      };
+      walk(root);
+      return out.replace(/(<br>)+$/, "");
+    }
+
+    function renderInto(target, html) {
+      target.replaceChildren();
+      const parsed = new DOMParser().parseFromString("<body>" + html + "</body>", "text/html");
+      const build = (src, dst) => {
+        for (const n of src.childNodes) {
+          if (n.nodeType === Node.TEXT_NODE) {
+            dst.appendChild(document.createTextNode(n.nodeValue));
+          } else if (n.nodeType === Node.ELEMENT_NODE) {
+            const tag = n.localName;
+            if (tag === "br") {
+              dst.appendChild(document.createElementNS(XHTML, "br"));
+            } else if (tag === "b" || tag === "i" || tag === "u" || tag === "s") {
+              const e = document.createElementNS(XHTML, tag);
+              dst.appendChild(e);
+              build(n, e);
+            } else {
+              build(n, dst);
+            }
+          }
+        }
+      };
+      build(parsed.body, target);
+    }
 
     // ---- storage ----
     const keyOf = (tab) => tab.id || "";
@@ -134,7 +228,7 @@
       clearTimeout(flushTimer);
       flushTimer = setTimeout(async () => {
         try {
-          await IOUtils.writeJSON(STORE_FILE, { version: 1, notes: store }, { tmpPath: STORE_FILE + ".tmp" });
+          await IOUtils.writeJSON(STORE_FILE, { version: 2, notes: store }, { tmpPath: STORE_FILE + ".tmp" });
         } catch (e) {
           console.error(LOG, "could not write notes file", e);
         }
@@ -154,7 +248,7 @@
       if (changed) flushStore();
     }
 
-    function getNote(tab) {
+    function getRaw(tab) {
       let value = "";
       try {
         value = SS.getCustomTabValue(tab, KEY) || "";
@@ -166,18 +260,24 @@
       return value;
     }
 
-    function saveNote(tab, text) {
-      text = text.replace(/\s+$/, "");
-      const has = !!text.trim();
+    const getHtml = (tab) => {
+      const raw = getRaw(tab);
+      return raw ? rawToHtml(raw) : "";
+    };
+    const tabHasNote = (tab) => hasText(getHtml(tab));
+
+    function saveNote(tab, html) {
+      const has = hasText(html);
+      const raw = HTML_PREFIX + html;
       try {
-        if (has) SS.setCustomTabValue(tab, KEY, text);
+        if (has) SS.setCustomTabValue(tab, KEY, raw);
         else SS.deleteCustomTabValue(tab, KEY);
       } catch (e) {
         console.error(LOG, "could not save note to the session", e);
       }
       const k = keyOf(tab);
       if (k) {
-        if (has) store[k] = { t: text, u: Date.now() };
+        if (has) store[k] = { t: raw, u: Date.now() };
         else delete store[k];
         flushStore();
       }
@@ -193,8 +293,17 @@
       if (!content) return null;
 
       const ind = h("div", "rzt-note-indicator " + (mode === "icon" ? "rzt-note-icon" : "rzt-note-ribbon"));
-      ind.addEventListener("mouseenter", () => scheduleShow(tab));
-      ind.addEventListener("mouseleave", scheduleHide);
+      ind.addEventListener("mouseenter", () => {
+        overIndicator = true; // keeps the tab tooltip / preview from showing over it
+        try {
+          document.getElementById("tab-preview-panel")?.hidePopup();
+        } catch (e) {}
+        scheduleShow(tab);
+      });
+      ind.addEventListener("mouseleave", () => {
+        overIndicator = false;
+        scheduleHide(180);
+      });
       ind.addEventListener("mousedown", (e) => e.stopPropagation());
       ind.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -216,9 +325,9 @@
     function refresh(tab) {
       if (!tab || tab.closing) return;
       let ind = tab._rztIndicator;
-      const note = enabled ? getNote(tab) : "";
+      const raw = enabled ? getRaw(tab) : "";
 
-      if (!note) {
+      if (!raw || !hasText(rawToHtml(raw))) {
         tab.removeAttribute("rzt-note");
         if (ind) ind.remove();
         tab._rztIndicator = null;
@@ -229,7 +338,7 @@
 
       // keep the session copy in sync when the note came from the file
       try {
-        if (!SS.getCustomTabValue(tab, KEY)) SS.setCustomTabValue(tab, KEY, note);
+        if (!SS.getCustomTabValue(tab, KEY)) SS.setCustomTabValue(tab, KEY, raw);
       } catch (e) {}
 
       const mode = indicatorMode();
@@ -248,33 +357,88 @@
       for (const tab of gBrowser.tabs) refresh(tab);
     }
 
-    // ---- the note window (auto-saving, no buttons) ----
+    // ---- the note window (rich text, auto-saving, no buttons) ----
+    function updateFormatButtons() {
+      if (!els.fmt) return;
+      for (const [cmd] of FORMAT_BUTTONS) {
+        let on = false;
+        try {
+          on = document.queryCommandState(cmd);
+        } catch (e) {}
+        els.fmt[cmd].classList.toggle("active", on);
+      }
+    }
+
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(commit, 250);
+    }
+
     function buildCard() {
       if (card) return;
+
+      // transparent layer under the window while editing: the first click outside
+      // only closes the window and never reaches the page / the tabs behind it
+      scrim = h("div", "rzt-note-scrim");
+      scrim.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeCard(true);
+      });
+      for (const type of ["mouseup", "click", "dblclick", "auxclick", "contextmenu"]) {
+        scrim.addEventListener(type, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (type === "click" || type === "auxclick" || type === "contextmenu") releaseScrim();
+        });
+      }
+
       card = h("div", "rzt-note-card");
 
       const head = h("div", "rzt-note-head");
       els.title = h("span", "rzt-note-title");
-      head.append(h("span", "rzt-note-label", "Note"), els.title);
+      els.fmt = {};
+      const bar = h("div", "rzt-note-fmt");
+      bar.addEventListener("mousedown", (e) => e.preventDefault()); // keep the selection
+      for (const [cmd, glyph, title] of FORMAT_BUTTONS) {
+        const b = h("button", "rzt-note-fmt-btn rzt-fmt-" + cmd, glyph);
+        b.setAttribute("title", title);
+        b.addEventListener("click", () => {
+          els.text.focus();
+          document.execCommand(cmd);
+          updateFormatButtons();
+          scheduleSave();
+        });
+        els.fmt[cmd] = b;
+        bar.append(b);
+      }
+      head.append(h("span", "rzt-note-label", "Note"), els.title, bar);
 
-      els.text = h("textarea", "rzt-note-text");
-      els.text.setAttribute("placeholder", "Write a note for this tab…");
+      els.text = h("div", "rzt-note-text");
+      els.text.setAttribute("contenteditable", "true");
+      els.text.setAttribute("spellcheck", "false");
+      els.text.setAttribute("data-placeholder", "Write a note for this tab…");
 
       card.append(head, els.text);
 
       card.addEventListener("mouseenter", () => clearTimeout(hideTimer));
       card.addEventListener("mouseleave", () => {
-        if (cardMode === "peek") scheduleHide();
+        if (cardMode === "peek") scheduleHide(90);
       });
       card.addEventListener("mousedown", (e) => e.stopPropagation());
 
       els.text.addEventListener("input", () => {
-        autosize();
-        reposition();
-        clearTimeout(saveTimer);
-        saveTimer = setTimeout(commit, 250);
+        if (els.text.textContent === "" && !els.text.querySelector("br:not(:only-child)")) {
+          els.text.replaceChildren(); // lets the placeholder show again
+        }
+        clampVertical();
+        scheduleSave();
+        updateFormatButtons();
       });
       els.text.addEventListener("focus", () => {
+        try {
+          document.execCommand("styleWithCSS", false, false);
+        } catch (e) {}
         if (cardMode === "peek") setMode("edit");
       });
       els.text.addEventListener("blur", (e) => {
@@ -289,31 +453,56 @@
       });
       els.text.addEventListener("keydown", (e) => {
         e.stopPropagation();
-        if (e.key === "Escape" || (e.key === "Enter" && (e.ctrlKey || e.metaKey))) {
+        if (e.key === "Escape") {
           e.preventDefault();
           closeCard(true);
+        } else if (e.key === "Enter" && !e.isComposing) {
+          e.preventDefault();
+          if (e.shiftKey) document.execCommand("insertLineBreak");
+          else closeCard(true); // Enter closes, Shift+Enter = new line
         }
       });
       for (const type of ["keyup", "keypress"]) {
         els.text.addEventListener(type, (e) => e.stopPropagation());
       }
+      els.text.addEventListener("paste", (e) => {
+        e.preventDefault(); // plain text only
+        const text = (e.clipboardData?.getData("text/plain") || "").replace(/\r\n?/g, "\n");
+        text.split("\n").forEach((line, i) => {
+          if (i) document.execCommand("insertLineBreak");
+          if (line) document.execCommand("insertText", false, line);
+        });
+      });
+      els.text.addEventListener("drop", (e) => e.preventDefault());
+
+      document.addEventListener("selectionchange", () => {
+        if (card.hasAttribute("open")) updateFormatButtons();
+      });
+    }
+
+    function activateScrim() {
+      clearTimeout(scrimTimer);
+      scrim.setAttribute("active", "");
+    }
+    function releaseScrim() {
+      clearTimeout(scrimTimer);
+      scrim?.removeAttribute("active");
     }
 
     function setMode(mode) {
       cardMode = mode;
       card.dataset.mode = mode;
+      if (mode === "edit") activateScrim();
     }
 
-    function autosize() {
-      els.text.style.height = "auto";
-      els.text.style.height = Math.min(els.text.scrollHeight + 2, 240) + "px";
-    }
-
-    function reposition() {
-      if (!card || !card.hasAttribute("open")) return;
-      if (anchorEl && !anchorEl.isConnected) anchorEl = cardTab; // indicator was just removed/recreated
-      if (!anchorEl) return;
-      const r = anchorEl.getBoundingClientRect();
+    // The window is placed ONCE when it opens (and again only on a window resize).
+    // It must not follow the tab afterwards: with an expand-on-hover sidebar the tab
+    // moves to the left as soon as the pointer leaves the sidebar.
+    function place() {
+      if (!card) return;
+      const anchor = anchorEl && anchorEl.isConnected ? anchorEl : cardTab;
+      if (!anchor) return;
+      const r = anchor.getBoundingClientRect();
       const cw = card.offsetWidth || 300;
       const ch = card.offsetHeight || 120;
       const vw = window.innerWidth;
@@ -325,13 +514,20 @@
       card.style.top = top + "px";
     }
 
+    function clampVertical() {
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      const vh = window.innerHeight;
+      if (r.bottom > vh - 8) card.style.top = Math.max(8, vh - 8 - r.height) + "px";
+    }
+
     function commit() {
       clearTimeout(saveTimer);
       if (!cardTab || !els.text) return;
-      const value = els.text.value;
-      if (value === lastSaved) return;
-      lastSaved = value;
-      saveNote(cardTab, value);
+      const html = serialize(els.text);
+      if (html === lastSaved) return;
+      lastSaved = html;
+      saveNote(cardTab, html);
     }
 
     function openCard(tab, mode, anchor) {
@@ -350,24 +546,29 @@
       if (isOpen) closeCard(true);
 
       buildCard();
+      if (!scrim.isConnected) document.documentElement.appendChild(scrim);
       if (!card.isConnected) document.documentElement.appendChild(card);
 
       cardTab = tab;
       anchorEl = anchor || tab;
-      lastSaved = getNote(tab);
-      els.text.value = lastSaved;
+      renderInto(els.text, getHtml(tab));
+      lastSaved = serialize(els.text);
       els.title.textContent = tab.label || "";
-      setMode(mode);
       openedAt = Date.now();
+      updateFormatButtons();
 
+      place();
       card.setAttribute("open", "");
-      autosize();
-      reposition();
+      setMode(mode);
 
       if (mode === "edit") {
         els.text.focus();
-        const end = els.text.value.length;
-        els.text.setSelectionRange(end, end);
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(els.text);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
       }
     }
 
@@ -382,6 +583,11 @@
       cardMode = null;
       anchorEl = null;
       if (document.activeElement === els.text) els.text.blur();
+      // keep swallowing the click that closed the window (released on `click`, or after a moment)
+      if (scrim?.hasAttribute("active")) {
+        clearTimeout(scrimTimer);
+        scrimTimer = setTimeout(releaseScrim, 350);
+      }
     }
 
     function scheduleShow(tab) {
@@ -390,12 +596,12 @@
       showTimer = setTimeout(() => openCard(tab, "peek", tab._rztIndicator), 140);
     }
 
-    function scheduleHide() {
+    function scheduleHide(delay) {
       clearTimeout(showTimer);
       clearTimeout(hideTimer);
       hideTimer = setTimeout(() => {
         if (cardMode === "peek") closeCard(true);
-      }, 280);
+      }, delay);
     }
 
     function deleteNote(tab) {
@@ -403,13 +609,48 @@
       saveNote(tab, "");
     }
 
+    // ---- tab tooltip / hover preview must not show while the pointer is on the indicator ----
+    function onAnyPopupShowing(e) {
+      if (!overIndicator) return;
+      const t = e.target;
+      if (t.localName === "tooltip" || /tooltip|preview/i.test(t.id || "")) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+
     // ---- "Add Note..." / "Delete Note..." in the tab context menu ----
+    function noteIconUri(color) {
+      const svg =
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'>" +
+        "<path fill='" + color + "' d='M3 1.5h10A1.5 1.5 0 0 1 14.5 3v5.5h-4a2 2 0 0 0-2 2v4H3A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5Z'/>" +
+        "<path fill='" + color + "' fill-opacity='0.55' d='M14.5 9.5 9.5 14.5v-3a2 2 0 0 1 2-2Z'/></svg>";
+      return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+    }
+
+    // The icon is drawn with a concrete color (read from the menu item) instead of
+    // context-fill, and it follows whichever icon style the neighbouring items use.
+    function paintMenuIcon() {
+      if (!menuItem) return;
+      const sibling = menuItem.nextElementSibling;
+      const iconic = !!sibling?.classList.contains("menuitem-iconic");
+      let color = "#e8e8ee";
+      try {
+        const c = getComputedStyle(menuItem).color;
+        if (c && c !== "rgba(0, 0, 0, 0)") color = c;
+      } catch (e) {}
+      menuItem.style.setProperty("--rzt-menu-icon", noteIconUri(color));
+      menuItem.classList.toggle("menuitem-iconic", iconic);
+      menuItem.toggleAttribute("rzt-iconic", iconic);
+    }
+
     function onPopupShowing(e) {
       const popup = e.target;
       if (popup.id !== "tabContextMenu" || !menuItem) return;
       const tab = window.TabContextMenu?.contextTab;
-      menuItem.setAttribute("label", tab && getNote(tab) ? "Delete Note..." : "Add Note...");
+      menuItem.setAttribute("label", tab && tabHasNote(tab) ? "Delete Note..." : "Add Note...");
       menuItem.hidden = !tab;
+      paintMenuIcon();
     }
 
     function ensureMenu() {
@@ -420,11 +661,10 @@
         menuItem = document.createXULElement("menuitem");
         menuItem.id = "context_rzt-add-note";
         menuItem.setAttribute("label", "Add Note...");
-        menuItem.classList.add("menuitem-iconic");
         menuItem.addEventListener("command", () => {
           const tab = window.TabContextMenu?.contextTab;
           if (!tab) return;
-          if (getNote(tab)) deleteNote(tab);
+          if (tabHasNote(tab)) deleteNote(tab);
           else setTimeout(() => openCard(tab, "edit", tab), 80);
         });
       }
@@ -445,6 +685,7 @@
         ensureMenu();
       } else {
         closeCard(true);
+        releaseScrim();
         menuItem?.remove();
       }
       refreshAll();
@@ -456,6 +697,7 @@
 
     function init() {
       document.getElementById("tabContextMenu")?.addEventListener("popupshowing", onPopupShowing);
+      document.addEventListener("popupshowing", onAnyPopupShowing, true);
 
       const tabs = gBrowser.tabContainer;
       tabs.addEventListener("SSTabRestored", (e) => refresh(e.target));
@@ -463,7 +705,9 @@
         if (cardTab === e.target) closeCard(true);
       });
       window.addEventListener("SSWindowStateReady", refreshAll);
-      window.addEventListener("resize", reposition);
+      window.addEventListener("resize", () => {
+        if (card?.hasAttribute("open")) place();
+      });
 
       // a tab can become / stop being an Essential at any time
       new MutationObserver((records) => {
